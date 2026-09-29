@@ -1087,8 +1087,6 @@ export interface ProfileInfo {
   name: string
   path: string
   provider: null | string
-  /** Backend-assigned role from profile.yaml; `setup` marks the onboarding guide's profile. */
-  role?: 'setup' | null
   skill_count: number
 }
 
