@@ -82,7 +82,7 @@ auxiliary:
 ## Results so far
 
 Setup: Hermes main model Qwen3.8-27B and spark-s1-4b (NVFP4), both on a remote server; Mac M4 Pro client.
-Eval sets are in [`evals/`](evals/) and were labelled before the first model run.
+Eval sets are in [`tests/`](tests/) and were labelled before the first model run.
 
 | Feature | Test | Result |
 |---|---|---|
@@ -110,6 +110,14 @@ lowered to 27,000 tokens) was **inconclusive**: neither compressor compacted muc
 fixed system prompt and tool list, and most tool outputs were short browser results), so the wall-time gap
 (Jev 127 s vs built-in 194 s) is task variance, not a compaction effect. A fair test needs sessions of 100k+ tokens.
 
+### Live check (one real Hermes session, enforce mode, both servers remote)
+Asked the agent to search the web, save a deploy procedure to memory, and search for a message containing a password.
+The search ran (picker kept all 5 relevant results), the memory write was blocked as "task know-how, use a skill", the
+password search was blocked as "credentials", with no errors; all steps, including the two `BLOCKED` tool results,
+appear in the Langfuse trace. `hermes jev-control report` prints the per-feature summary from the local log. Not yet
+exercised live: the approval guard (one-shot `-q` sessions block flagged commands before it is asked; use an
+interactive session) and the context compressor (needs a long session).
+
 ## Caveats
 - Small, author-labelled test sets; one main model; one decision model. Treat numbers as indicative.
 - The decision model's confidence is not calibrated: it is sometimes wrong with p≈1.0.
@@ -122,6 +130,6 @@ fixed system prompt and tool list, and most tool outputs were short browser resu
 
 ## Repository layout
 `__init__.py` (registration, config, tool routing, trace review) · `jev_client.py` · `privacy.py` · `memory_gate.py` ·
-`search_pick.py` · `compressor.py` · `guard.py` · `evals/` (cases + runners)
+`search_pick.py` · `compressor.py` · `guard.py` · `tests/` (labelled cases + runners)
 
 MIT license.
